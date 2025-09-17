@@ -1,29 +1,25 @@
-html lang="es">
+<!DOCTYPE html>
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Verificación de PIN - Asistencia</title>
+  <title>IP no compatible</title>
   <style>
-    :root{
-      --azul:#3498db;
-      --azul-osc:#2980b9;
-      --gris:#f5f8fc;
-      --card:#ffffff;
-      --rojo:#e74c3c;
-      --verde:#27ae60;
-      --amarillo:#f1c40f;
-    }
-    *{box-sizing:border-box}
-
-    /* Fondo con gradiente y burbujas */
     body {
-      margin:0; font-family: Arial, sans-serif; color:#2c3e50;
-      min-height:100vh; display:flex; flex-direction:column;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       background: linear-gradient(135deg, #f5f8fc, #dbe4ff);
       overflow: hidden;
       position: relative;
+      flex-direction: column;
+      text-align: center;
     }
 
+    /* Fondo con burbujas */
     body::before, body::after {
       content: "";
       position: absolute;
@@ -49,212 +45,58 @@ html lang="es">
       100% { transform: translateY(0) rotate(360deg); }
     }
 
-    .wrap, .banner-ip {
-      position: relative; z-index: 1;
+    .mensaje {
+      position: relative;
+      z-index: 1;
+      background: #ffeaea;
+      color: #e74c3c;
+      padding: 20px 30px;
+      border-radius: 12px;
+      border: 3px solid #e74c3c;
+      font-size: 2.2rem;
+      font-weight: bold;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
     }
 
-    /* Banner IP */
-    .banner-ip{
-      width:100%; 
-      background:#ffeaea; 
-      color:var(--rojo); 
-      padding:12px 16px;
-      font-weight:bold; 
-      font-size:1.4rem;
-      text-align:center; 
-      border-bottom:2px solid var(--rojo);
+    .mensaje span {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 10px;
     }
 
-    /* Contenedor principal */
-    .wrap{
-      flex:1; display:flex; align-items:center; justify-content:center; padding:24px;
-      position:relative;
+    .aviso {
+      font-size: 1.2rem;
+      color: #333;
+      margin-bottom: 20px;
     }
-    /* Sticker llave */
-    .sticker{
-      position:absolute; top:18px; right:18px; font-size:42px; transform:rotate(-15deg);
-      user-select:none;
+
+    .boton {
+      padding: 12px 25px;
+      background-color: #3498db;
+      color: white;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+      text-decoration: none;
     }
-    .card{
-      width:100%; max-width:520px; background:var(--card); border-radius:16px; padding:28px;
-      box-shadow:0 10px 24px rgba(0,0,0,.08);
+
+    .boton:hover {
+      background-color: #2980b9;
     }
-    h1{margin:0 0 6px 0; font-size:1.6rem;}
-    .sub{margin:0 0 18px 0; color:#516171; font-size:.95rem}
-    /* Estado */
-    .estado{
-      display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px;
-      font-weight:bold; font-size:.95rem; margin-bottom:18px;
-    }
-    .estado.neutro{background:#eef4ff; color:#3b5bdb;}
-    .estado.presente{background:#e9f9f0; color:var(--verde);}
-    .estado.ausente{background:#ffefef; color:var(--rojo);}
-    /* Inputs PIN */
-    .pin{
-      display:flex; justify-content:center; gap:12px; margin:14px 0 18px;
-    }
-    .pin input{
-      width:64px; height:64px; text-align:center; font-size:2rem; border:2px solid #dbe4ff;
-      border-radius:12px; outline:none; transition:.2s ease; background:#fafcff;
-    }
-    .pin input:focus{border-color:var(--azul); box-shadow:0 0 0 3px #e7f2ff;}
-    /* Botones */
-    .btn{
-      display:inline-block; width:100%; padding:12px 16px; border:none; border-radius:10px;
-      background:var(--azul); color:#fff; font-size:1.05rem; font-weight:600; cursor:pointer;
-      transition:.2s ease;
-    }
-    .btn:hover{background:var(--azul-osc);}
-    .btn:disabled{opacity:.6; cursor:not-allowed;}
-    .acciones{
-      display:flex; gap:12px; margin-top:10px;
-    }
-    .btn-sec{
-      background:#eef2f7; color:#2c3e50;
-    }
-    .info{
-      margin-top:10px; color:#516171; font-size:.95rem;
-    }
-    .msg{
-      margin-top:12px; font-weight:600;
-    }
-    .msg.error{color:var(--rojo);}
-    .msg.ok{color:var(--verde);}
   </style>
 </head>
 <body>
-  <!-- Aviso IP -->
-  <div class="banner-ip">⚠️ Tu IP no es compatible ❌</div>
-
-  <div class="wrap">
-    <!-- Sticker llave -->
-    <div class="sticker" aria-hidden="true">🔑</div>
-
-    <div class="card">
-      <h1>Verificación de 4 dígitos</h1>
-      <p class="sub">Ingresá el PIN de 4 números. Tenés <strong>2 intentos</strong>.</p>
-
-      <div id="estado" class="estado neutro">Estado: En verificación</div>
-
-      <form id="formPin" autocomplete="off">
-        <div class="pin">
-          <input inputmode="numeric" pattern="[0-9]*" maxlength="1" class="d" id="d1" aria-label="Dígito 1" />
-          <input inputmode="numeric" pattern="[0-9]*" maxlength="1" class="d" id="d2" aria-label="Dígito 2" />
-          <input inputmode="numeric" pattern="[0-9]*" maxlength="1" class="d" id="d3" aria-label="Dígito 3" />
-          <input inputmode="numeric" pattern="[0-9]*" maxlength="1" class="d" id="d4" aria-label="Dígito 4" />
-        </div>
-
-        <button type="submit" class="btn">Verificar</button>
-        <div class="acciones">
-          <button type="button" class="btn btn-sec" id="btnBorrar">Borrar</button>
-          <button type="button" class="btn btn-sec" id="btnAuto">Autocompletar (demo)</button>
-        </div>
-      </form>
-
-      <div class="info">
-        Intentos usados: <span id="intentos">0</span> / 2
-      </div>
-      <div id="mensaje" class="msg"></div>
-    </div>
+  <div class="mensaje">
+    <span>⚠️</span>
+    Tu IP no es compatible ❌
   </div>
-
-  <script>
-    // === CONFIGURACIÓN ===
-    const CODE = "1234"; // PIN real
-    const DEMO_CODE = "4325"; // PIN demo
-    const MAX_INTENTOS = 2;
-
-    // === LÓGICA ===
-    const inputs = [...document.querySelectorAll('.d')];
-    const form = document.getElementById('formPin');
-    const spIntentos = document.getElementById('intentos');
-    const mensaje = document.getElementById('mensaje');
-    const estado = document.getElementById('estado');
-    const btnBorrar = document.getElementById('btnBorrar');
-    const btnAuto = document.getElementById('btnAuto');
-
-    let intentos = 0;
-    let bloqueado = false;
-
-    // Auto-focus al ir escribiendo
-    inputs.forEach((inp, idx) => {
-      inp.addEventListener('input', () => {
-        inp.value = inp.value.replace(/\D/g, '').slice(0,1);
-        if (inp.value && idx < inputs.length - 1) inputs[idx + 1].focus();
-      });
-      inp.addEventListener('keydown', (e) => {
-        if (e.key === 'Backspace' && !inp.value && idx > 0) inputs[idx - 1].focus();
-      });
-    });
-
-    function setEstado(tipo, texto){
-      estado.className = 'estado ' + tipo;
-      estado.textContent = 'Estado: ' + texto;
-    }
-
-    function getCodigoIngresado(){
-      return inputs.map(i => i.value || '').join('');
-    }
-
-    function deshabilitar(){
-      bloqueado = true;
-      inputs.forEach(i => i.disabled = true);
-      form.querySelector('button[type="submit"]').disabled = true;
-    }
-
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      if (bloqueado) return;
-
-      const codigo = getCodigoIngresado();
-
-      if (codigo.length !== 4) {
-        mensaje.textContent = 'Ingresá los 4 dígitos.';
-        mensaje.className = 'msg error';
-        return;
-      }
-
-      if (codigo === CODE) {
-        setEstado('presente', 'Presente');
-        mensaje.textContent = '¡Código correcto! Marcado como Presente.';
-        mensaje.className = 'msg ok';
-        deshabilitar();
-        return;
-      }
-
-      // Falló
-      intentos++;
-      spIntentos.textContent = intentos;
-
-      if (intentos >= MAX_INTENTOS) {
-        setEstado('ausente', 'Ausente');
-        mensaje.textContent = 'Se alcanzó el máximo de intentos. Marcado como Ausente.';
-        mensaje.className = 'msg error';
-        deshabilitar();
-      } else {
-        setEstado('neutro', 'En verificación');
-        mensaje.textContent = 'Código incorrecto. Probá de nuevo.';
-        mensaje.className = 'msg error';
-        inputs.forEach(i => i.value = '');
-        inputs[0].focus();
-      }
-    });
-
-    btnBorrar.addEventListener('click', () => {
-      if (bloqueado) return;
-      inputs.forEach(i => i.value = '');
-      inputs[0].focus();
-      mensaje.textContent = '';
-      mensaje.className = 'msg';
-    });
-
-    btnAuto.addEventListener('click', () => {
-      if (bloqueado) return;
-      inputs.forEach((i, idx) => i.value = DEMO_CODE[idx] || '');
-    });
-
-    // Focus inicial
-    inputs[0].focus();
-  </script>
+  <div class="aviso">
+    Este sitio solo funciona con IPs autorizadas. Por favor, verifica tu conexión o contacta con soporte.
+  </div>
+  <a href="index.html" class="boton">Volver al inicio</a>
 </body>
 </html>
+
